@@ -10,7 +10,7 @@ def combinaison(n, i):
     return factorial(n) / (factorial(n-i)*factorial(i))
 
 
-def EuropeanOptionBinomial(S0, K, T, r,u , d, p, N, type_, output = None):
+def EuropeanOptionBinomial(S0, K, T, r, u, d, p, N, type_, output = None):
 
     # Probability of each paths at maturity
     weight = [combinaison(N, i) * p ** i * (1 - p) ** (N - i) for i in range(N + 1)]
