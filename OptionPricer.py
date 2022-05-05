@@ -29,7 +29,7 @@ def EuropeanOptionBinomial(S0, K, T, r, u, d, p, N, type_, output = None):
     if output == 'payoff':
         # useful only when pricing American Options
         return C
-    return (weight * C) * np.exp(-r * T)
+    return ((weight * C) * np.exp(-r * T)).sum()
 
 
 def AmericanOptionBinomial(S0, K, T, r, u, d, p, N, type_):
