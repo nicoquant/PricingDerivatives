@@ -192,7 +192,7 @@ class BinaryOption(European_BS):
     def put_binary(self,short_long,S, K, T, x):
         if short_long == 'long':
             return np.exp(-(self.r - self.q) * T) * norm.cdf(1-x*European_BS.d2_BS(self,S, K, T))
-        if short_long == 'put':
+        if short_long == 'short':
             return -np.exp(-(self.r - self.q) * T) * norm.cdf(1 - x * European_BS.d2_BS(self, S, K, T))
 
     def delta_binary(self, short_long,type, S, K, T, x):
