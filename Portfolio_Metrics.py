@@ -27,5 +27,4 @@ if __name__ == '__main__':
 
     vega_bin = bin.vega_binary('long',type='call', S=100, K=110, T=1)
 
-    asian_call = asian.call_asian(101, 100, 12, 10000, 2)
-    asian_put = asian.put_asian(101, 100, 12, 10000, 2)
+    asian_put = asian.asian_mcm(101, 100, 12, 10000, 2, 'p')
