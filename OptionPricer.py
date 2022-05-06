@@ -270,7 +270,7 @@ class AsianOptionMCM(European_BS):
 
         return S1
 
-    def call_asian(self, S, K, steps, n_paths, T):
+    def asian_mcm(self, S, K, steps, n_paths, T, type):
         '''
         Compute 10 000 paths using GBM
         Compute the payoff of the last values of the paths
@@ -279,17 +279,13 @@ class AsianOptionMCM(European_BS):
         :return:
         '''
         matrice = self.GBM(S, steps, n_paths, T)
-        payoff = matrice[:, -1] - K
+        if type == 'p':
+            payoff = K - matrice[:, -1]
+
+        elif type == 'c':
+            payoff = matrice[:, -1] - K
         payoff[payoff < 0] = 0
-        if len(payoff) > 0:
-            return np.mean(payoff)*np.exp(-self.r*T)
-        else:
-            return 0
-    def put_asian(self, S, K, steps, n_paths, T):
-        matrice = self.GBM(S, steps, n_paths, T)
-        payoff = matrice[:, -1] - K
-        payoff = payoff*(-1)
-        payoff[payoff < 0] = 0
+
         if len(payoff) > 0:
             return np.mean(payoff)*np.exp(-self.r*T)
         else:
