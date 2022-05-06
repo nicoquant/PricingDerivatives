@@ -1,4 +1,4 @@
-# Options pricing / May 2022
+# Options pricing
 The aim of this project is to price many types of option under different models. 
 
 In the main file, you can find how we evaluate European and American options under Binomial model.
