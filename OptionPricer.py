@@ -170,7 +170,7 @@ class European_BS:
             -self.r * T) * norm.cdf(self.d2_BS(S, K, T))
 
     def put_european(self, S, K, T):
-        return S * np.exp(-self.q * T) * (norm.cdf(self.d1_BS(S, K, T)) - 1) - K * np.exp(-self.r * T) * (
+        return S * np.exp(-self.q * T) * (norm.cdf(self.d1_BS(S,K,T)) - 1) - K * np.exp(-self.r * T) * (
                 norm.cdf(self.d2_BS(S, K, T)) - 1)
 
     def d1_BS(self, S, K, T):
@@ -247,7 +247,7 @@ class BinaryOption(European_BS):
                                                                                                        T) / self.vol)*l
 
 
-class AsianOptionMCM(European_BS):
+class OptionMCM(European_BS):
     def __init__(self, q, r, vol, T):
         super().__init__(q, r, vol, T)
     @staticmethod
@@ -280,18 +280,113 @@ class AsianOptionMCM(European_BS):
         '''
         matrice = self.GBM(S, steps, n_paths, T)
         if type == 'p':
-            payoff = K - matrice[:, -1]
+            payoff = np.maximum(K - matrice[:, -1][matrice[:, -1]!=0],0)
 
         elif type == 'c':
-            payoff = matrice[:, -1] - K
-        payoff[payoff < 0] = 0
+            payoff = np.maximum(matrice[:, -1][matrice[:, -1]!=0] - K,0)
 
         if len(payoff) > 0:
-            return np.mean(payoff)*np.exp(-self.r*T)
+            return np.sum(payoff)*np.exp(-self.r*T)/n_paths
         else:
             return 0
+    #Barrier Options: Not efficiently coded
+    def put_up_out(self, S, K, H,steps, n_paths, T):
 
+        matrice = self.GBM(S, steps, n_paths, T)
+        simulation_in = matrice.copy()
 
+        condition = np.unique(np.where((matrice >= H))[0])
+
+        simulation_in[condition,:] = 0
+
+        payoff = np.maximum(K- simulation_in[:, -1][simulation_in[:, -1]!=0], 0)
+        return np.exp(-self.r*self.T) * np.sum(payoff) / n_paths
+
+    def put_up_in(self, S, K, H,steps, n_paths, T):
+
+        if H < S:
+            raise ValueError("H has to be greater than S, for a PUI")
+        matrice = self.GBM(S, steps, n_paths, T)
+        simulation_in = matrice.copy()
+
+        condition = np.unique(np.where((matrice >= H))[0])
+
+        simulation_in[~condition,:] = 0
+
+        payoff = np.maximum(K- simulation_in[:, -1][simulation_in[:, -1]!=0], 0)
+        return np.exp(-self.r*self.T) * np.sum(payoff) / n_paths
+
+    def put_down_in(self, S, K, H,steps, n_paths, T):
+
+        matrice = self.GBM(S, steps, n_paths, T)
+        simulation_in = matrice.copy()
+
+        condition = np.unique(np.where((matrice <= H))[0])
+
+        simulation_in[~condition,:] = 0
+
+        payoff = np.maximum(K- simulation_in[:, -1][simulation_in[:, -1]!=0], 0)
+        return np.exp(-self.r*self.T) * np.sum(payoff) / n_paths
+
+    def put_down_out(self, S, K, H,steps, n_paths, T):
+
+        matrice = self.GBM(S, steps, n_paths, T)
+        simulation_in = matrice.copy()
+
+        condition = np.unique(np.where((matrice <= H))[0])
+
+        simulation_in[condition,:] = 0
+
+        payoff = np.maximum(K- simulation_in[:, -1][simulation_in[:, -1]!=0], 0)
+        return np.exp(-self.r*self.T) * np.sum(payoff) / n_paths
+
+    def call_down_out(self, S, K, H,steps, n_paths, T):
+
+        matrice = self.GBM(S, steps, n_paths, T)
+        simulation_in = matrice.copy()
+
+        condition = np.unique(np.where((matrice <= H))[0])
+
+        simulation_in[condition,:] = 0
+
+        payoff = np.maximum(K- simulation_in[:, -1][simulation_in[:, -1]!=0], 0)
+        return np.exp(-self.r*self.T) * np.sum(payoff) / n_paths
+
+    def call_down_in(self, S, K, H,steps, n_paths, T):
+
+        matrice = self.GBM(S, steps, n_paths, T)
+        simulation_in = matrice.copy()
+
+        condition = np.unique(np.where((matrice <= H))[0])
+
+        simulation_in[~condition,:] = 0
+
+        payoff = np.maximum(K- simulation_in[:, -1][simulation_in[:, -1]!=0], 0)
+        return np.exp(-self.r*self.T) * np.sum(payoff) / n_paths
+
+    def call_up_out(self, S, K, H,steps, n_paths, T):
+
+        matrice = self.GBM(S, steps, n_paths, T)
+        simulation_in = matrice.copy()
+
+        condition = np.unique(np.where((matrice >= H))[0])
+
+        simulation_in[condition,:] = 0
+
+        payoff = np.maximum(K- simulation_in[:, -1][simulation_in[:, -1]!=0], 0)
+        return np.exp(-self.r*self.T) * np.sum(payoff) / n_paths
+
+    def call_up_in(self, S, K, H,steps, n_paths, T):
+
+        matrice = self.GBM(S, steps, n_paths, T)
+        simulation_in = matrice.copy()
+
+        condition = np.unique(np.where((matrice >= H))[0])
+
+        simulation_in[~condition,:] = 0
+
+        payoff = np.maximum(K- simulation_in[:, -1][simulation_in[:, -1]!=0], 0)
+        return np.exp(-self.r*self.T) * np.sum(payoff) / n_paths
 
 class portfolio(European_BS):
     def __init__(self,q, r, vol, T):
