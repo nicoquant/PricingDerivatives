@@ -170,8 +170,8 @@ class European_BS:
             -self.r * T) * norm.cdf(self.d2_BS(S, K, T))
 
     def put_european(self, S, K, T):
-        return S * np.exp(-self.q * T) * (norm.cdf(self.d1_BS()) - 1) - K * np.exp(-self.r * T) * (
-                norm.cdf(self.d2_BS(S, K)) - 1)
+        return S * np.exp(-self.q * T) * (norm.cdf(self.d1_BS(S, K, T)) - 1) - K * np.exp(-self.r * T) * (
+                norm.cdf(self.d2_BS(S, K, T)) - 1)
 
     def d1_BS(self, S, K, T):
         return (np.log(S / K) + (self.r - self.q + (self.vol ** 2) / 2) * T) / (self.vol * T)
