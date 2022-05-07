@@ -5,9 +5,9 @@ from scipy.stats.mstats import gmean
 from OptionPricer import *
 
 if __name__ == '__main__':
-    euro = European_BS(q=0.07, r=0.01, vol=0.1, T=1)
+    euro = European_BS(q=0.07, r=0.01, vol=0.2, T=1)
     bin = BinaryOption(q=0.07, r=0.01, vol=0.1, T=1)
-    asian = AsianOptionMCM(q=0.07, r=0.01, vol=0.1, T=1)
+    mcm = OptionMCM(q=0.07, r=0.01, vol=0.2, T=1)
 
     price_call = euro.call_european(100, 110, 2)
     delta_euro = euro.delta('long', 'call', 100, 110, 1)
@@ -27,4 +27,9 @@ if __name__ == '__main__':
 
     vega_bin = bin.vega_binary('long',type='call', S=100, K=110, T=1)
 
-    asian_put = asian.asian_mcm(101, 100, 12, 10000, 2, 'p')
+    asian_put = mcm.asian_mcm(101, 100, 12, 1000, 2, 'p')
+
+    call_vanille = euro.put_european(100, 100, 1)
+
+    put_up_out = mcm.put_up_out(100,100, 125,100,1000,1)
+    put_down_out = mcm.put_down_out(100, 100, 125, 100, 1000, 1)
