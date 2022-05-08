@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
     asian_put = mcm.asian_mcm(101, 100, 12, 1000, 2, 'p')
 
-    call_vanille = euro.put_european(100, 100, 1)
+    put_vanilla = euro.put_european(100, 100, 1)
 
     put_up_out = mcm.put_up_out(100,100, 125,100,1000,1)
     put_down_out = mcm.put_down_out(100, 100, 125, 100, 1000, 1)
