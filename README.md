@@ -9,7 +9,7 @@ In the Portfolio metrics.py script, one can find the evaluation of European and 
 The script, also, gives access to the pricing of Asian and different type of Barrier options which are done under monte carlo simulation (have to be completed).
 A function which allows to build a portfolio of options and to observe the greeks of the portfolio(only availible for Binary and European so far) is also availible.
 
-# Volatility_smile.py: Newton-Raphston algorithm applied to volatility smile curve building
+# Volatility_smile.py: Newton-Raphston algorithm applied to the construction of the volatility surface
 In this script, one can find the construction of the volatility smile using Newton-Raphston algorithm. One can be inspired by this script to prove that the BS assumption of constant volatility does not hold on the real market.
 
 Note: I am aware that errors/ wrong implementations are possible and I please you to send me an email if you notice an (some) error(s). It would be very helpful, and will help me to improve myself. 
