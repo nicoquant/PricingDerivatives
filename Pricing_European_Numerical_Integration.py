@@ -2,14 +2,14 @@ import numpy as np
 from OptionPricer import *
 
 
-def Log_Normal(S, r, q, sig, S0, T):
-    f = np.exp(-0.5 * ((np.log(S / S0) - (r - q - sig ** 2 / 2) * T) / (sig * np.sqrt(T))) ** 2) / (
-            sig * S * np.sqrt(2 * np.pi * T))
+def Log_Normal(S, r, q, vol, S0, T):
+    f = np.exp(-0.5 * ((np.log(S / S0) - (r - q - vol ** 2 / 2) * T) / (vol * np.sqrt(T))) ** 2) / (
+            vol * S * np.sqrt(2 * np.pi * T))
     return f
 
 
 def PricingNumericalIntegration(*args):
-    r, q, S0, K, sig, T, N, dS = args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]
+    r, q, S0, K, vol, T, N, dS = args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]
 
     # discount factor
     df = np.exp(-r * T)
@@ -17,7 +17,7 @@ def PricingNumericalIntegration(*args):
     ####### Evaluation of the integral using Trapezoidal method #######
     S = np.arange(1, N * dS + 1, dS)  # Define Grid of Prices
 
-    tmp = Log_Normal(S, r, q, sig, S0, T)  # log normal densities of S0
+    tmp = Log_Normal(S, r, q, vol, S0, T)  # log normal densities of S0
 
     w = [dS] * N
     w[0] = dS / 2
@@ -38,15 +38,15 @@ def PricingNumericalIntegration(*args):
 
 
 if __name__ == '__main__':
-    S0, K, r, q, sig, T = 100, 80, 0.05, 0.01, 0.3, 2.0
+    S0, K, r, q, vol, T = 100, 80, 0.05, 0.01, 0.3, 2.0
     dS = 0.10  # step-size
 
     # number of grid points
     n = 12
     N = 2 ** n
 
-    arg = (r, q, S0, K, sig, T, N, dS)
+    arg = (r, q, S0, K, vol, T, N, dS)
     c0_KT, p0_KT = PricingNumericalIntegration(*arg)
 
-    Euro = European_BS(q=q, r=r, vol=sig, T=T)  # 30.41
+    Euro = European_BS(q=q, r=r, vol=vol, T=T)  # 30.41
     BS_Call_Price = Euro.call_european(S0, K, T)  # 30.11
