@@ -21,5 +21,8 @@ The pricer named "Pricing_Numerical_Integration_Fourier_Transform" starts using 
 
 The lecture "Computational Methods in Pricing and Model Calibration" delivered by Columbia University has been the support of this project, and the technique they used is really close to this one. 
 
+# Trapezoidal_Method.py
+One can find in this script, 2 methods (one simple, one vectorize) to evaluate an integrale using the Trapezoidal Method.
+
 Note: I am aware that errors/ wrong implementations are possible and I please you to send me an email if you notice an (some) error(s). It would be very helpful, and will help me to improve myself. 
 Here is my mail address: nicolas.manelli013@gmail.com
