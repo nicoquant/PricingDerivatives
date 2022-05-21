@@ -14,7 +14,7 @@ In this script, one can find the construction of the volatility smile using Newt
 
 # Pricing_European_Numerical_Integration.py: Pricing by evaluating integrals
 
-One can find, in this script, a method to price European option using numerical integration. 
+One can find, in this script, many methods to price European option using numerical integration. 
 The pricer named "PricingNumericalIntegration" assumes that prices are log normally distributed and the evaluation of the integral is done using Trapezoidal method. First, the payoff curve of the option is fitted with the log normal distribution, then each intervals is evaluated. 
 
 The pricer named "Pricing_Numerical_Integration_Fourier_Transform" starts using the characteritic function of BMS. Then, we compute the fourier transform of the modified call, evaluate the integral, use the Inverse Fourier Transform to find the modified call price and then transform the modified call price in the call price. 
