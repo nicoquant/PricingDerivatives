@@ -57,6 +57,8 @@ def Pricing_Numerical_Integration_Fourier_Transform(S, K, r, q, T, N, vol, alpha
     k = np.log(K)
     df = np.exp(-r * T) # discount factor
     sum_tot = 0
+
+
     for j in range(N):
         nuJ = j * eta
 
@@ -73,36 +75,23 @@ def Pricing_Numerical_Integration_Fourier_Transform(S, K, r, q, T, N, vol, alpha
 
     return np.real(Ct_k)
 
-
-def generic_CF(u, vol, S0, r, q, T):
-    sig = vol
-    mu = np.log(S0) + (r - q - sig ** 2 / 2) * T
-    a = sig * np.sqrt(T)
-    phi = np.exp(1j * mu * u - (a * u) ** 2 / 2)
-    return phi
-
-
-def evaluateIntegral(vol, S0, K, r, q, T, alpha, eta):
-    # Just one strike at a time
-    # no need for Fast Fourier Transform
-
-    # discount factor
-    df = math.exp(-r * T)
+def Pricing_Numerical_Integration_Fourier_Transform_vectorize(S, K, r, q, T, N, vol, alpha, eta):
+    '''
+    :return: Same methods as below but vectorize to speed the
+    '''
     k = np.log(K)
-    sum1 = 0
-    for j in range(N):
-        nuJ = j * eta
-        psi_nuJ = df * generic_CF(nuJ - (alpha + 1) * 1j, vol, S0, r, q, T) / (
-                    (alpha + 1j * nuJ) * (alpha + 1 + 1j * nuJ))
-        if j == 0:
-            wJ = (eta / 2)
-        else:
-            wJ = eta
-        sum1 += np.exp(-1j * nuJ * k) * psi_nuJ * wJ
+    df = np.exp(-r * T) # discount factor
+    sum_tot = np.exp(-1j * 0 * k) * df * genericCF(0 - (alpha + 1) * 1j, S, r, q, T, vol)*eta / (2*(alpha + 1j * 0)*(alpha + 1j * 0 + 1))
 
-    cT_k = (np.exp(-alpha * k) / math.pi) * sum1
+    nuJ = np.array([(j * eta) for j in np.arange(1,N)])
 
-    return np.real(cT_k)
+    sum_tot += sum(np.exp(-1j * nuJ * k) * eta * df * genericCF(nuJ - (alpha + 1) * 1j, S, r, q, T, vol) / ((alpha + 1j * nuJ)*(alpha + 1j * nuJ + 1)))
+
+    Ct_k = (np.exp(-alpha * k)/math.pi) * sum_tot # Ct(k) = exp(-alpha*k) * ct(k)
+
+    return np.real(Ct_k)
+
+
 
 if __name__ == '__main__':
     S0, K, r, q, vol, T = 100, 80, 0.05, 0.01, 0.3, 1.0
@@ -116,7 +105,7 @@ if __name__ == '__main__':
     start_time = time.time()
     c0_KT, p0_KT = PricingNumericalIntegration(*arg) # c0_KT = 25.61
     elapsed_time = time.time() - start_time
-    print('Pricing took ' + str(round(elapsed_time,3)) + 'sec')
+    print('Pricing took ' + str(round(elapsed_time,3)) + ' seconds')
 
     Euro = European_BS(q=q, r=r, vol=vol, T=T)
     BS_Call_Price = Euro.call_european(S0, K, T)  # 25.61
@@ -124,6 +113,9 @@ if __name__ == '__main__':
     start_time = time.time()
     C_FT = Pricing_Numerical_Integration_Fourier_Transform(S0, K, r, q, T, N, vol, 1.5, eta)
     elapsed_time = time.time() - start_time
-    print('Pricing using FT took ' + str(round(elapsed_time,3)) + 'sec')
+    print('Pricing using FT took ' + str(round(elapsed_time,3)) + ' seconds')
 
-    C2 = evaluateIntegral(vol, S0, K, r, q, T, 1.5, eta)
+    start_time = time.time()
+    C_FT_vect = Pricing_Numerical_Integration_Fourier_Transform_vectorize(S0, K, r, q, T, N, vol, 1.5, eta)
+    elapsed_time = time.time() - start_time
+    print('Pricing using FT vectorized took ' + str(round(elapsed_time,3)) + ' seconds') # 25.61
