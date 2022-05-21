@@ -12,9 +12,14 @@ A function which allows to build a portfolio of options and to observe the greek
 # Volatility_smile.py: Newton-Raphston algorithm applied to the construction of the volatility surface
 In this script, one can find the construction of the volatility smile using Newton-Raphston algorithm. One can be inspired by this script to prove that the BS assumption of constant volatility does not hold on the real market.
 
-# Pricing_European_Numerical_Integration.py
+# Pricing_European_Numerical_Integration.py: Pricing by evaluating integrals
 
-One can find, in this script, a method to price European option using numerical integration. The pricer assumes that prices are log normally distributed and the evaluation of the integral is done using Trapezoidal method. The lecture "Computational Methods in Pricing and Model Calibration" delivered by Columbia University has been the support of this project, and the technique they used is really close to this one. 
+One can find, in this script, a method to price European option using numerical integration. 
+The pricer named "PricingNumericalIntegration" assumes that prices are log normally distributed and the evaluation of the integral is done using Trapezoidal method. First, the payoff curve of the option is fitted with the log normal distribution, then each intervals is evaluated. 
+
+The pricer named "Pricing_Numerical_Integration_Fourier_Transform" starts using the characteritic function of BMS. Then, we compute the fourier transform of the modified call, evaluate the integral, use the Inverse Fourier Transform to find the modified call price and then transform the modified call price in the call price. 
+
+The lecture "Computational Methods in Pricing and Model Calibration" delivered by Columbia University has been the support of this project, and the technique they used is really close to this one. 
 
 Note: I am aware that errors/ wrong implementations are possible and I please you to send me an email if you notice an (some) error(s). It would be very helpful, and will help me to improve myself. 
 Here is my mail address: nicolas.manelli013@gmail.com
