@@ -111,11 +111,11 @@ if __name__ == '__main__':
     BS_Call_Price = Euro.call_european(S0, K, T)  # 25.61
 
     start_time = time.time()
-    C_FT = Pricing_Numerical_Integration_Fourier_Transform(S0, K, r, q, T, N, vol, 1.5, eta)
+    C_FT = Pricing_Numerical_Integration_Fourier_Transform(S0, K, r, q, T, N, vol, 1.5, eta) # 25.61
     elapsed_time = time.time() - start_time
     print('Pricing using FT took ' + str(round(elapsed_time,3)) + ' seconds')
 
     start_time = time.time()
-    C_FT_vect = Pricing_Numerical_Integration_Fourier_Transform_vectorize(S0, K, r, q, T, N, vol, 1.5, eta)
+    C_FT_vect = Pricing_Numerical_Integration_Fourier_Transform_vectorize(S0, K, r, q, T, N, vol, 1.5, eta) # 25.61
     elapsed_time = time.time() - start_time
-    print('Pricing using FT vectorized took ' + str(round(elapsed_time,3)) + ' seconds') # 25.61
+    print('Pricing using FT vectorized took ' + str(round(elapsed_time,3)) + ' seconds') 
