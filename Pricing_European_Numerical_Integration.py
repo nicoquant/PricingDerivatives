@@ -11,7 +11,7 @@ def Log_Normal(S, r, q, vol, S0, T):
     return f
 
 
-def PricingNumericalIntegration(*args):
+def CallNumericalIntegration(*args):
     r, q, S0, K, vol, T, N, dS = args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]
 
     # discount factor
@@ -53,7 +53,7 @@ def genericCF(v, S0, r, q, T, vol):
     return np.exp(1j*(np.log(S0)+(r-q-vol**2/2)*T)*v - (vol**2 * v**2)*T/2)
 
 
-def Pricing_Numerical_Integration_Fourier_Transform(S, K, r, q, T, N, vol, alpha, eta):
+def Call_Numerical_Integration_Fourier_Transform(S, K, r, q, T, N, vol, alpha, eta):
     k = np.log(K)
     df = np.exp(-r * T) # discount factor
     sum_tot = 0
@@ -75,7 +75,7 @@ def Pricing_Numerical_Integration_Fourier_Transform(S, K, r, q, T, N, vol, alpha
 
     return np.real(Ct_k)
 
-def Pricing_Numerical_Integration_Fourier_Transform_vectorize(S, K, r, q, T, N, vol, alpha, eta):
+def Call_Numerical_Integration_Fourier_Transform_vectorize(S, K, r, q, T, N, vol, alpha, eta):
     '''
     :return: Same methods as below but vectorize to speed the
     '''
@@ -91,7 +91,12 @@ def Pricing_Numerical_Integration_Fourier_Transform_vectorize(S, K, r, q, T, N, 
 
     return np.real(Ct_k)
 
-
+def Put_Numerical_Integration_Fourier_Transform_vectorize(S, K, r, q, T, N, vol, alpha, eta):
+    '''
+    :return: Using Put Call parity to price the put
+    '''
+    Ct = Call_Numerical_Integration_Fourier_Transform_vectorize(S, K, r, q, T, N, vol, alpha, eta)
+    return Ct - S*np.exp(-q*T) + K * np.exp(-r * T)
 
 if __name__ == '__main__':
     S0, K, r, q, vol, T = 100, 80, 0.05, 0.01, 0.3, 1.0
@@ -103,19 +108,22 @@ if __name__ == '__main__':
 
     arg = (r, q, S0, K, vol, T, N, eta)
     start_time = time.time()
-    c0_KT, p0_KT = PricingNumericalIntegration(*arg) # c0_KT = 25.61
+    c0_KT, p0_KT = CallNumericalIntegration(*arg) # c0_KT = 25.61
     elapsed_time = time.time() - start_time
     print('Pricing took ' + str(round(elapsed_time,3)) + ' seconds')
 
     Euro = European_BS(q=q, r=r, vol=vol, T=T)
     BS_Call_Price = Euro.call_european(S0, K, T)  # 25.61
+    BS_Put_Price = Euro.put_european(S0, K, T)
 
     start_time = time.time()
-    C_FT = Pricing_Numerical_Integration_Fourier_Transform(S0, K, r, q, T, N, vol, 1.5, eta) # 25.61
+    C_FT = Call_Numerical_Integration_Fourier_Transform(S0, K, r, q, T, N, vol, 1.5, eta) # 25.61
     elapsed_time = time.time() - start_time
     print('Pricing using FT took ' + str(round(elapsed_time,3)) + ' seconds')
 
     start_time = time.time()
-    C_FT_vect = Pricing_Numerical_Integration_Fourier_Transform_vectorize(S0, K, r, q, T, N, vol, 1.5, eta) # 25.61
+    C_FT_vect = Call_Numerical_Integration_Fourier_Transform_vectorize(S0, K, r, q, T, N, vol, 1.5, eta) # 25.61
     elapsed_time = time.time() - start_time
-    print('Pricing using FT vectorized took ' + str(round(elapsed_time,3)) + ' seconds') 
+    print('Pricing using FT vectorized took ' + str(round(elapsed_time,3)) + ' seconds')
+
+    P_FT_vect = Put_Numerical_Integration_Fourier_Transform_vectorize(S0, K, r, q, T, N, vol, 1.5, eta) # 2.70
