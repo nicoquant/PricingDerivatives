@@ -17,7 +17,7 @@ The pricer named "Pricing_Numerical_Integration_Fourier_Transform" starts using 
 The pricer "Pricing_Numerical_Integration_Fourier_Transform_vectorized" is the same as below but is vectorized but run faster (between 4 and 5 times faster).  
 
 # Trapezoidal_Method.py
-One can find in this script, 2 methods (one simple, one vectorize) to evaluate an integrale using the Trapezoidal Method.
+One can find in this script, 2 methods (one simple, one vectorized) to evaluate an integrale using the Trapezoidal Method.
 
 # Autoregressive Models.py
 
