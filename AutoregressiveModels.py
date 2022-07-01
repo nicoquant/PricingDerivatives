@@ -73,7 +73,7 @@ class ARMA():
 
     def loglikelihood_ar(self, param):
         """
-        As stated in many papers (à citer), we assume past errors = 0
+        We assume past errors = 0
         :param param: initial values for the minimization
         :return: log likelihood
         """
@@ -162,7 +162,7 @@ class ARMA():
     def loglikelihood_ma(self, param):
 
         """
-        As stated in many papers (à citer), we assume past errors = 0c
+        We assume past errors = 0c
         :param param: initial values for the minimization
         :return: log likelihood
         """
@@ -199,7 +199,6 @@ class ARMA():
 
     def loglikelihood_arma(self, param):
         """
-        As stated in many papers (à citer), we assume past errors = 0
         :param param: initial values for the minimization
         :return: log likelihood
         """
