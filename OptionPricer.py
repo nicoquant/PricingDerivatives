@@ -430,7 +430,7 @@ class portfolio(European_BS):
         return sum(greek_list)
     
     
-    if __name__ == '__main__':
+if __name__ == '__main__':
     euro = European_BS(q=0.07, r=0.01, vol=0.2, T=1)
     bin = BinaryOption(q=0.07, r=0.01, vol=0.1, T=1)
     mcm = OptionMCM(q=0.07, r=0.01, vol=0.2, T=1)
@@ -459,3 +459,21 @@ class portfolio(European_BS):
 
     put_up_out = mcm.put_up_out(100,100, 125,100,1000,1)
     put_down_out = mcm.put_down_out(100, 100, 125, 100, 1000, 1)
+    
+    # Binomial Pricing
+    N = 2
+    S0 = 100
+    T = 2
+    sigma = np.log(1.1)
+    K = 100
+    r = 0.05
+    dt = T / N
+
+    u = round(np.exp(sigma * np.sqrt(dt)),1) # u = 1.1
+    d = round(np.exp(-sigma * np.sqrt(dt)),1) # d = 0.9
+
+    # probabilité up & down
+    p = (np.exp(r * dt) - d) / (u - d) # p = 0.7564
+
+    Call_Euro = EuropeanOptionBinomial(S0, K, T, r, u, d, p, N, type_='c')
+    Put_American = AmericanOptionBinomial(S0, K, T, r, u, d, p, N, type_='p')
