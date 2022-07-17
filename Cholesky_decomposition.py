@@ -19,7 +19,7 @@ class Cholesky_Decomposition:
         """
         if np.sum(np.linalg.eigvals(self.A) < 0) > 0:
             raise ValueError(
-                "Matrice has to be semi definite. Here is the eigenvalues found: "
+                "Matrice has to be semi definite. Here are the eigenvalues found: "
                 + str(np.linalg.eigvals(self.A))
             )
 
