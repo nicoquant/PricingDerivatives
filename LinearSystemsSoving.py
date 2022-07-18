@@ -1,8 +1,10 @@
 import numpy as np
 
 class LinearSystemsSolver:
-    def __init__(self, matrice):
-        self.A = matrice
+    def __init__(self, matrix):
+        if not np.allclose(matrix, matrix.T, rtol=1e-05, atol=1e-08):
+            raise ValueError('Input matrix is not symetric')
+        self.A = matrix
 
     def decomposition(self):
         """
@@ -42,26 +44,23 @@ class LinearSystemsSolver:
         lower = self.decomposition()
         upper = lower.copy().T
 
-        y, x = np.zeros((len(vector), 1)), np.zeros((len(vector), 1))
+        y, x = np.zeros(len(vector)), np.zeros(len(vector))
 
         for i in range(len(y)):
 
-            y[i] = (vector[i] - sum([lower[i, j] * y[j] for j in range(i)])) / lower[
-                i, i
-            ]
+            y[i] = (vector[i] - sum([lower[i, j] * y[j] for j in range(i)])) / lower[i, i]
 
         for i in np.arange(len(x) - 1, -1, -1):
 
-            x[i] = (
-                y[i] - sum([upper[i, j] * x[j] for j in range(i + 1, len(x))])
-            ) / upper[i, i]
+            x[i] = (y[i] - sum([upper[i, j] * x[j] for j in range(i + 1, len(x))])) / upper[i, i]
 
         return x
 
 if __name__ == '__main__':
-    A = np.array([10, 9, 7, 9, 12, 6, 7, 6, 7]).reshape(3, 3)
-    b = np.array([3,8,9])
-    res = np.linalg.cholesky(A)
+    A = np.array([1,2,0,0,2,6,-2,0,0,-2,5,-2,0,0,-2,3]).reshape(4, 4)
+    b = np.array([3,8,9,3])
+    #res = np.linalg.cholesky(A)
     met = LinearSystemsSolver(A)
+    #ch = met.decomposition()
     x = met.solver(b)
-    print(np.linalg.solve(A, b) == x)
+    print(np.linalg.solve(A, b))
