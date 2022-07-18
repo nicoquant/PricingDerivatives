@@ -2,8 +2,6 @@ import numpy as np
 
 class LinearSystemsSolver:
     def __init__(self, matrix):
-        if not np.allclose(matrix, matrix.T, rtol=1e-05, atol=1e-08):
-            raise ValueError('Input matrix is not symetric')
         self.A = matrix
 
     def decomposition(self):
