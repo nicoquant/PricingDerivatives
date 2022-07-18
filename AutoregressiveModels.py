@@ -87,8 +87,6 @@ class ARMA():
         X = np.array([shift(self.serie, i, cval=np.NaN) for i in range(1, lag_ar + 1)]).T[lag_ar:]
         eta2 = param_ar @ X.T
         #eta2 = []
-        #for t in range(lag_ar, len(self.serie)):
-        #    eta2.insert(0, param_ar @ np.flip(self.serie[t - lag_ar: t]) - np.mean(self.serie))
 
         return T / 2 * np.log(np.var(self.serie)) + T / 2 * np.log(2 * np.pi) + np.sum(
             (np.array(eta2) ** 2) / (2 * np.var(self.serie)))
