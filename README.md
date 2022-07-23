@@ -14,7 +14,7 @@ One can find, in this script, many methods to price European option using numeri
 The pricer named "PricingNumericalIntegration" assumes that prices are log normally distributed and the evaluation of the integral is done using Trapezoidal method. First, the payoff curve of the option is fitted with the log normal distribution, then each intervals is evaluated. 
 
 The pricer named "Pricing_Numerical_Integration_Fourier_Transform" starts using the characteritic function of BMS. Then, we compute the fourier transform of the modified call, evaluate the integral, use the Inverse Fourier Transform to find the modified call price and then transform the modified call price in the call price. 
-The pricer "Pricing_Numerical_Integration_Fourier_Transform_vectorized" is the same as below but is vectorized but run faster (between 4 and 5 times faster).  
+The pricer "Pricing_Numerical_Integration_Fourier_Transform_vectorized" is the same as below but is vectorized and run faster (between 4 and 5 times faster).  
 
 # Trapezoidal_Method.py
 One can find in this script, 2 methods (one simple, one vectorized) to evaluate an integrale using the Trapezoidal Method.
