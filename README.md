@@ -1,4 +1,4 @@
-# Options_pricer
+# Options_Pricing
 The aim of this project is to price many types of option under different models. 
 
 One can find the evaluation of European and Binary options under the BS formula and Binomial model.
