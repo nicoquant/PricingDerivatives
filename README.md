@@ -1,8 +1,8 @@
-# Options pricing
+# Options_pricer
 The aim of this project is to price many types of option under different models. 
 
 One can find the evaluation of European and Binary options under the BS formula and Binomial model.
-The script, also, gives access to the pricing of Asian and different type of Barrier options which are done under monte carlo simulation (have to be completed).
+The file, also, gives access to the pricing of Asian and different type of Barrier options which are done under monte carlo simulation (have to be completed).
 A function which allows to build a portfolio of options and to observe the greeks of the portfolio(only availible for Binary and European so far) is also availible.
 
 # Volatility_smile.py: Newton-Raphston algorithm applied to the construction of the volatility surface
