@@ -1,17 +1,15 @@
 import math
-import cmath
-import numpy as np
-from OptionPricer import *
+from EuropeanBS import *
 import time
 
 
-def Log_Normal(S, r, q, vol, S0, T):
+def log_normal(S, r, q, vol, S0, T):
     f = np.exp(-0.5 * ((np.log(S / S0) - (r - q - vol ** 2 / 2) * T) / (vol * np.sqrt(T))) ** 2) / (
             vol * S * np.sqrt(2 * np.pi * T))
     return f
 
 
-def CallNumericalIntegration(*args):
+def call_numerical_integration(*args):
     r, q, S0, K, vol, T, N, dS = args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]
 
     # discount factor
@@ -20,7 +18,7 @@ def CallNumericalIntegration(*args):
     ####### Evaluation of the integral using Trapezoidal method #######
     S = np.arange(1, N * dS + 1, dS)  # Define Grid of Prices
 
-    tmp = Log_Normal(S, r, q, vol, S0, T)  # log normal densities of S0
+    tmp = log_normal(S, r, q, vol, S0, T)  # log normal densities of S0
 
     w = [dS] * N
     w[0] = dS / 2
@@ -53,7 +51,7 @@ def genericCF(v, S0, r, q, T, vol):
     return np.exp(1j*(np.log(S0)+(r-q-vol**2/2)*T)*v - (vol**2 * v**2)*T/2)
 
 
-def Call_Numerical_Integration_Fourier_Transform(S, K, r, q, T, N, vol, alpha, eta):
+def call_numerical_integration_fourrier_transform(S, K, r, q, T, N, vol, alpha, eta):
     k = np.log(K)
     df = np.exp(-r * T) # discount factor
     sum_tot = 0
@@ -75,7 +73,7 @@ def Call_Numerical_Integration_Fourier_Transform(S, K, r, q, T, N, vol, alpha, e
 
     return np.real(Ct_k)
 
-def Call_Numerical_Integration_Fourier_Transform_vectorize(S, K, r, q, T, N, vol, alpha, eta):
+def call_numerical_integration_fourrier_transform_vectorize(S, K, r, q, T, N, vol, alpha, eta):
     '''
     :return: Same methods as below but vectorize to speed the
     '''
@@ -91,11 +89,34 @@ def Call_Numerical_Integration_Fourier_Transform_vectorize(S, K, r, q, T, N, vol
 
     return np.real(Ct_k)
 
-def Put_Numerical_Integration_Fourier_Transform_vectorize(S, K, r, q, T, N, vol, alpha, eta):
+
+def put_numerical_integration_fourrier_transform(S, K, r, q, T, N, vol, alpha, eta):
+    k = np.log(K)
+    df = -np.exp(-r * T) # discount factor
+    sum_tot = 0
+
+
+    for j in range(N):
+        nuJ = j * eta
+
+        # Fourier Transform of modified call: ct(k) = exp(alpha*k) * Ct(k)
+        psy_v = df * genericCF(nuJ - (alpha + 1) * 1j, S, r, q, T, vol) / ((alpha + 1j * nuJ)*(alpha + 1j * nuJ + 1))
+        if j == 0:
+            w = eta/2
+        else:
+            w = eta
+
+        sum_tot += np.exp(-1j * nuJ * k) * psy_v * w # Inverse Fourier Transform to find modified call
+
+    Ct_k = (np.exp(-alpha * k)/math.pi) * sum_tot # Ct(k) = exp(-alpha*k) * ct(k)
+
+    return np.real(Ct_k)
+
+def put_by_parity(S, K, r, q, T, N, vol, alpha, eta):
     '''
     :return: Using Put Call parity to price the put
     '''
-    Ct = Call_Numerical_Integration_Fourier_Transform_vectorize(S, K, r, q, T, N, vol, alpha, eta)
+    Ct = call_numerical_integration_fourrier_transform_vectorize(S, K, r, q, T, N, vol, alpha, eta)
     return Ct - S*np.exp(-q*T) + K * np.exp(-r * T)
 
 if __name__ == '__main__':
@@ -108,7 +129,7 @@ if __name__ == '__main__':
 
     arg = (r, q, S0, K, vol, T, N, eta)
     start_time = time.time()
-    c0_KT, p0_KT = CallNumericalIntegration(*arg) # c0_KT = 25.61
+    c0_KT, p0_KT = call_numerical_integration(*arg) # c0_KT = 25.61
     elapsed_time = time.time() - start_time
     print('Pricing took ' + str(round(elapsed_time,3)) + ' seconds')
 
@@ -117,13 +138,15 @@ if __name__ == '__main__':
     BS_Put_Price = Euro.put_european(S0, K, T)
 
     start_time = time.time()
-    C_FT = Call_Numerical_Integration_Fourier_Transform(S0, K, r, q, T, N, vol, 1.5, eta) # 25.61
+    C_FT = call_numerical_integration_fourrier_transform(S0, K, r, q, T, N, vol, 1.5, eta) # 25.61
     elapsed_time = time.time() - start_time
     print('Pricing using FT took ' + str(round(elapsed_time,3)) + ' seconds')
 
     start_time = time.time()
-    C_FT_vect = Call_Numerical_Integration_Fourier_Transform_vectorize(S0, K, r, q, T, N, vol, 1.5, eta) # 25.61
+    C_FT_vect = call_numerical_integration_fourrier_transform_vectorize(S0, K, r, q, T, N, vol, 1.5, eta) # 25.61
     elapsed_time = time.time() - start_time
     print('Pricing using FT vectorized took ' + str(round(elapsed_time,3)) + ' seconds')
 
-    P_FT_vect = Put_Numerical_Integration_Fourier_Transform_vectorize(S0, K, r, q, T, N, vol, 1.5, eta) # 2.70
+
+    Put_Parity = put_by_parity(S0, K, r, q, T, N, vol, 1.5, eta) # 2.70
+    P_FT_vect = put_numerical_integration_fourrier_transform(S0, K, r, q, T, N, vol, 1.5, eta) # 25.61
