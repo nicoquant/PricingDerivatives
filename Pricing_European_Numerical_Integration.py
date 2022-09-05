@@ -1,5 +1,6 @@
 import math
-from EuropeanBS import *
+import numpy as np
+from Options_Pricing.EuropeanBS import European_BS
 import time
 
 
