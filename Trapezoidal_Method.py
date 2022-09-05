@@ -4,7 +4,7 @@ import time
 def f(x):
     return np.power(x,3)
 
-def Trapezoidal_Vectorize(start, end, N):
+def trapezoidal_vectorize(start, end, N):
     eta = (end - start)/N
     k = [(start + j * eta) for j in np.arange(1, N)]
     f_k = f(k)
@@ -13,7 +13,7 @@ def Trapezoidal_Vectorize(start, end, N):
     return sum_f_k
 
 
-def Trapezoidal(start, end, N):
+def trapezoidal(start, end, N):
 
     eta = (end - start)/N
     somme = 0
@@ -32,11 +32,11 @@ def Trapezoidal(start, end, N):
 
 
 start_time = time.time()
-print(Trapezoidal(start = 1, end = 10, N=1000))
+print(trapezoidal(start = 1, end = 10, N=1000))
 elapsed_time = time.time() - start_time
 print('Evaluation using simple solution: ' + str(round(elapsed_time, 3)) + 'sec')
 
 start_time = time.time()
-print(Trapezoidal_Vectorize(start = 1, end = 10, N=1000))
+print(trapezoidal_vectorize(start = 1, end = 10, N=1000))
 elapsed_time = time.time() - start_time
 print('Evaluation using vectorize solution: ' + str(round(elapsed_time, 3)) + 'sec')
