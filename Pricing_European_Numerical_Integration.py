@@ -4,12 +4,23 @@ from Options_Pricing.EuropeanBS import European_BS
 import time
 
 
+def time_compute(func):
+    def wrapper(*args):
+        out = []
+        start_time = time.time()
+        out.append(func(*args))
+        elapsed_time = time.time() - start_time
+        print('Pricing with ' + func.__name__ + ' took ' + str(round(elapsed_time, 3)) + ' seconds')
+        return out[0]
+    return wrapper
+
+
 def log_normal(S, r, q, vol, S0, T):
     f = np.exp(-0.5 * ((np.log(S / S0) - (r - q - vol ** 2 / 2) * T) / (vol * np.sqrt(T))) ** 2) / (
             vol * S * np.sqrt(2 * np.pi * T))
     return f
 
-
+@time_compute
 def call_numerical_integration(*args):
     r, q, S0, K, vol, T, N, dS = args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]
 
@@ -51,8 +62,9 @@ def genericCF(v, S0, r, q, T, vol):
     '''
     return np.exp(1j*(np.log(S0)+(r-q-vol**2/2)*T)*v - (vol**2 * v**2)*T/2)
 
-
-def call_numerical_integration_fourrier_transform(S, K, r, q, T, N, vol, alpha, eta):
+@time_compute
+def call_numerical_integration_fourrier_transform(*args):
+    S, K, r, q, T, N, vol, alpha, eta = args[0], args[1],args[2], args[3],args[4], args[5],args[6], args[7], args[8]
     k = np.log(K)
     df = np.exp(-r * T) # discount factor
     sum_tot = 0
@@ -73,11 +85,12 @@ def call_numerical_integration_fourrier_transform(S, K, r, q, T, N, vol, alpha, 
     Ct_k = (np.exp(-alpha * k)/math.pi) * sum_tot # Ct(k) = exp(-alpha*k) * ct(k)
 
     return np.real(Ct_k)
-
-def call_numerical_integration_fourrier_transform_vectorize(S, K, r, q, T, N, vol, alpha, eta):
+@time_compute
+def call_numerical_integration_fourrier_transform_vectorize(*args):
     '''
     :return: Same methods as below but vectorize to speed the
     '''
+    S, K, r, q, T, N, vol, alpha, eta = args[0], args[1],args[2], args[3],args[4], args[5],args[6], args[7], args[8]
     k = np.log(K)
     df = np.exp(-r * T) # discount factor
     sum_tot = np.exp(-1j * 0 * k) * df * genericCF(0 - (alpha + 1) * 1j, S, r, q, T, vol)*eta / (2*(alpha + 1j * 0)*(alpha + 1j * 0 + 1))
@@ -90,8 +103,9 @@ def call_numerical_integration_fourrier_transform_vectorize(S, K, r, q, T, N, vo
 
     return np.real(Ct_k)
 
-
-def put_numerical_integration_fourrier_transform(S, K, r, q, T, N, vol, alpha, eta):
+@time_compute
+def put_numerical_integration_fourrier_transform(*args):
+    S, K, r, q, T, N, vol, alpha, eta = args[0], args[1],args[2], args[3],args[4], args[5],args[6], args[7], args[8]
     k = np.log(K)
     df = -np.exp(-r * T) # discount factor
     sum_tot = 0
@@ -113,10 +127,12 @@ def put_numerical_integration_fourrier_transform(S, K, r, q, T, N, vol, alpha, e
 
     return np.real(Ct_k)
 
-def put_by_parity(S, K, r, q, T, N, vol, alpha, eta):
+@time_compute
+def put_by_parity(*args):
     '''
     :return: Using Put Call parity to price the put
     '''
+    S, K, r, q, T, N, vol, alpha, eta = args[0], args[1],args[2], args[3],args[4], args[5],args[6], args[7], args[8]
     Ct = call_numerical_integration_fourrier_transform_vectorize(S, K, r, q, T, N, vol, alpha, eta)
     return Ct - S*np.exp(-q*T) + K * np.exp(-r * T)
 
@@ -129,25 +145,21 @@ if __name__ == '__main__':
     N = 2 ** n
 
     arg = (r, q, S0, K, vol, T, N, eta)
-    start_time = time.time()
     c0_KT, p0_KT = call_numerical_integration(*arg) # c0_KT = 25.61
-    elapsed_time = time.time() - start_time
-    print('Pricing took ' + str(round(elapsed_time,3)) + ' seconds')
+
 
     Euro = European_BS(q=q, r=r, vol=vol, T=T)
     BS_Call_Price = Euro.call_european(S0, K, T)  # 25.61
     BS_Put_Price = Euro.put_european(S0, K, T)
 
-    start_time = time.time()
-    C_FT = call_numerical_integration_fourrier_transform(S0, K, r, q, T, N, vol, 1.5, eta) # 25.61
-    elapsed_time = time.time() - start_time
-    print('Pricing using FT took ' + str(round(elapsed_time,3)) + ' seconds')
-
-    start_time = time.time()
-    C_FT_vect = call_numerical_integration_fourrier_transform_vectorize(S0, K, r, q, T, N, vol, 1.5, eta) # 25.61
-    elapsed_time = time.time() - start_time
-    print('Pricing using FT vectorized took ' + str(round(elapsed_time,3)) + ' seconds')
+    alpha = 1.5
+    args = (S0, K, r, q, T, N, vol, alpha, eta)
+    C_FT = call_numerical_integration_fourrier_transform(*args) # 25.61
 
 
-    Put_Parity = put_by_parity(S0, K, r, q, T, N, vol, 1.5, eta) # 2.70
+    C_FT_vect = call_numerical_integration_fourrier_transform_vectorize(*args) # 25.61
+
+
+
+    Put_Parity = put_by_parity(*args) # 2.70
     P_FT_vect = put_numerical_integration_fourrier_transform(S0, K, r, q, T, N, vol, 1.5, eta) # 25.61
